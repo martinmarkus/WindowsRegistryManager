@@ -45,11 +45,12 @@
     <Compile Include="DataObjects\RegistryEntity.cs" />
     <Compile Include="DataObjects\WindowsRegistryAccess\WindowsRegistryAccess.cs" />
     <Compile Include="DataObjects\WindowsRegistryAccess\IWindowsRegistryAccessHolder.cs" />
+    <Compile Include="Facades\Factories\RegistryKeyInitializerFactories\IRegistryKeyInitializerFactory.cs" />
     <Compile Include="Facades\Serializers\ByteArraySerializer.cs" />
     <Compile Include="Facades\Serializers\IByteArraySerializer.cs" />
     <Compile Include="Facades\Serializers\ISerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\RegistryKeyInitializers\BaseRegistryKeyInitializer.cs" />
+    <Compile Include="Services\RegistryKeyInitializers\RegistryKeyInitializer.cs" />
     <Compile Include="Services\RegistryKeyInitializers\ConcreteInitializers\ClassesRootInitializer.cs" />
     <Compile Include="Services\RegistryKeyInitializers\ConcreteInitializers\CurrentConfigInitializer.cs" />
     <Compile Include="Services\RegistryKeyInitializers\ConcreteInitializers\CurrentUserInitializer.cs" />
@@ -57,9 +58,10 @@
     <Compile Include="Services\RegistryKeyInitializers\ConcreteInitializers\LocalMachineInitializer.cs" />
     <Compile Include="Services\RegistryKeyInitializers\ConcreteInitializers\PerformanceDataInitializer.cs" />
     <Compile Include="Services\RegistryKeyInitializers\ConcreteInitializers\UsersInitializer.cs" />
-    <Compile Include="Services\RegistryKeyInitializers\IBaseRegistryKeyInitializer.cs" />
+    <Compile Include="Services\RegistryKeyInitializers\IRegistryKeyInitializer.cs" />
     <Compile Include="Services\WindowsRegistryOperators\RegistryReaders\WindowsRegistryReader.cs" />
     <Compile Include="Services\WindowsRegistryOperators\RegistryWriters\WindowsRegistryWriter.cs" />
+    <Compile Include="Facades\Factories\RegistryKeyInitializerFactories\RegistryKeyInitializerFactory.cs" />
     <Compile Include="Utilities\RootKey.cs" />
     <Compile Include="Services\IWindowsRegistryService.cs" />
     <Compile Include="Services\WindowsRegistryService.cs" />

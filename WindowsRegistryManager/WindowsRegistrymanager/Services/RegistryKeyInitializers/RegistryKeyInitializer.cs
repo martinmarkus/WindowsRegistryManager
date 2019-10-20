@@ -3,7 +3,7 @@ using WindowsRegistryManager.DataObjects.WindowsRegistryAccess;
 
 namespace WindowsRegistryManager.Services.RegistryKeyInitializers
 {
-    internal abstract class BaseRegistryKeyInitializer : IBaseRegistryKeyInitializer
+    internal abstract class RegistryKeyInitializer : IRegistryKeyInitializer
     {
         public abstract RegistryKey InitializeRegistryKey(WindowsRegistryAccess windowsRegistryAccess);
     }

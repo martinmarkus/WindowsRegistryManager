@@ -7,6 +7,6 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryWrite
     internal interface IWindowsRegistryWriter : IWindowsRegistryAccessHolder
     {
         void Write<T>(RegistryEntity<T> registryEntity);
-        void WriteAll<T>(ICollection<RegistryEntity<T>> registryEntities);
+        void WriteAll<T>(IList<RegistryEntity<T>> registryEntities);
     }
 }

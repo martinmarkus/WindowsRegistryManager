@@ -6,7 +6,9 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
 {
     internal interface IWindowsRegistryReader : IWindowsRegistryAccessHolder
     {
-        RegistryEntity<T> Get<T>(string name);
-        ICollection<RegistryEntity<T>> GetAll<T>();
+        RegistryEntity<T> Read<T>(string name);
+        IList<RegistryEntity<T>> ReadAll<T>();
+
+        int GetActualItemCount()
     }
 }

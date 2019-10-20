@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Win32;
+using System.Collections.Generic;
 using WindowsRegistryManager.DataObjects;
 using WindowsRegistryManager.Utilities;
 
@@ -19,7 +20,7 @@ namespace WindowsRegistryManager.Services
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        ICollection<T> GetAll<T>();
+        IList<T> GetAll<T>();
 
         /// <summary>
         /// Adds the newValue to the Registry under the passed name.
@@ -34,7 +35,7 @@ namespace WindowsRegistryManager.Services
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="newValues">The collection of values, which will be added to the Registry.</param>
-        void AddAll<T>(ICollection<T> newValues);
+        void AddAll<T>(IList<T> newValues);
 
         /// <summary>
         /// Overwrites a value in the Registry.
@@ -48,5 +49,7 @@ namespace WindowsRegistryManager.Services
         /// Sets the currently used Root key and the Registry path.
         /// </summary>
         void SetRegistryPath(RootKey rootKey, string pathWithoutRoot);
+
+        RegistryValueKind RegistryValueKind { get; set; };
     }
 }

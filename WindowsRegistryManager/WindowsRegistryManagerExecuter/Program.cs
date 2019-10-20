@@ -10,6 +10,8 @@ namespace WindowsRegistryManagerExecuter
         {
             IWindowsRegistryService windowsRegistryService = new WindowsRegistryService(RootKey.CurrentUser, @"Exampe\SubFolder");
 
+            
+
             Console.ReadKey();
         }
     }

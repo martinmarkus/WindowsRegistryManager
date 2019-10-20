@@ -16,17 +16,17 @@ namespace WindowsRegistryManager.Services
         private IWindowsRegistryWriter _windowsRegistryWriter;
         private IWindowsRegistryReader _windowsRegistryReader;
         private IRegistryKeyInitializerFactory _registryKeyInitializerFactory;
-
-        public RegistryValueKind RegistryValueKind { get; set; } = RegistryValueKind.DWord;
+        private RegistryValueKind _registryValueKind = RegistryValueKind.Binary;
 
         public WindowsRegistryService(RootKey rootKey, string pathWithoutRoot)
         {
-            WindowsRegistryAccess windowsRegistryAccess = GetAsWindowsRegistryAccess(rootKey, pathWithoutRoot);
             _registryKeyInitializerFactory = new RegistryKeyInitializerFactory();
             IRegistryKeyInitializer registryKeyInitializer = _registryKeyInitializerFactory.CreateInitializer(rootKey);
+
+            WindowsRegistryAccess windowsRegistryAccess = GetAsWindowsRegistryAccess(rootKey, pathWithoutRoot);
+
             _windowsRegistryWriter = new WindowsRegistryWriter(windowsRegistryAccess, registryKeyInitializer);
             _windowsRegistryReader = new WindowsRegistryReader(windowsRegistryAccess, registryKeyInitializer);
-
         }
 
         public T Get<T>(string name)
@@ -50,7 +50,7 @@ namespace WindowsRegistryManager.Services
 
         public void Add<T>(string name, T newValue)
         {
-            RegistryEntity<T> registryEntity = new RegistryEntity<T>(name, newValue, RegistryValueKind);
+            RegistryEntity<T> registryEntity = new RegistryEntity<T>(name, newValue, _registryValueKind);
             _windowsRegistryWriter.Write(registryEntity);
         }
 
@@ -64,7 +64,7 @@ namespace WindowsRegistryManager.Services
                 T newValue = newValues[i];
 
                 string nextId = Convert.ToString(actualItemCount + i);
-                RegistryEntity<T> registryEntity = new RegistryEntity<T>(nextId, newValue, RegistryValueKind);
+                RegistryEntity<T> registryEntity = new RegistryEntity<T>(nextId, newValue, _registryValueKind);
                 registryEntities.Add(registryEntity);
             }
 
@@ -73,16 +73,26 @@ namespace WindowsRegistryManager.Services
 
         public void Set<T>(string name, T updatedValue)
         {
-            RegistryEntity<T> registryEntity = new RegistryEntity<T>(name, updatedValue, RegistryValueKind);
+            RegistryEntity<T> registryEntity = new RegistryEntity<T>(name, updatedValue, _registryValueKind);
             _windowsRegistryWriter.Write(registryEntity);
         }
 
-        public void SetRegistryPath(RootKey rootKey, string pathWithoutRoot)
+        public void Remove(string name)
+        {
+            _windowsRegistryWriter.Remove(name);
+        }
+
+        public void SetRegistryAccess(RootKey rootKey, string pathWithoutRoot)
         {
             WindowsRegistryAccess windowsRegistryAccess = GetAsWindowsRegistryAccess(rootKey, pathWithoutRoot);
 
-            _windowsRegistryWriter.WindowsRegistryAccess = windowsRegistryAccess;
-            _windowsRegistryReader.WindowsRegistryAccess = windowsRegistryAccess;
+            _windowsRegistryWriter.InitializeRegistryAccess(windowsRegistryAccess);
+            _windowsRegistryReader.InitializeRegistryAccess(windowsRegistryAccess);          
+        }
+
+        public int GetItemCount()
+        {
+            return _windowsRegistryReader.GetActualItemCount();
         }
 
         private WindowsRegistryAccess GetAsWindowsRegistryAccess(RootKey rootKey, string pathWithoutRoot)

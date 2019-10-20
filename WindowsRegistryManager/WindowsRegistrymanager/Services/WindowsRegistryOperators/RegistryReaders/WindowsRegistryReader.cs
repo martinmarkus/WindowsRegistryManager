@@ -11,19 +11,18 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
 {
     internal class WindowsRegistryReader : IWindowsRegistryReader
     {
-        public WindowsRegistryAccess WindowsRegistryAccess { get; set; }
+        private WindowsRegistryAccess _windowsRegistryAccess;
+        private IRegistryKeyInitializer _registryKeyInitializer;
 
         private RegistryKey _registryKey;
         private IByteArraySerializer _byteArraySerializer;
-        private IRegistryKeyInitializer _registryKeyInitializer;
 
         public WindowsRegistryReader(WindowsRegistryAccess windowsRegistryAccess, IRegistryKeyInitializer registryKeyInitializer)
         {
-            WindowsRegistryAccess = windowsRegistryAccess;
             _registryKeyInitializer = registryKeyInitializer;
             _byteArraySerializer = new ByteArraySerializer();
 
-            InitializeRegistryAccess(WindowsRegistryAccess);
+            InitializeRegistryAccess(windowsRegistryAccess);
         }
 
         public RegistryEntity<T> Read<T>(string name)
@@ -41,7 +40,7 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
             {
                 result = _byteArraySerializer.Deserialize<T>(byteArray);
             }
-            catch (SerializationException e)
+            catch (Exception e) when (e is SerializationException || e is InvalidCastException)
             {
                 Console.WriteLine(e.ToString());
             }
@@ -67,6 +66,7 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
         public void InitializeRegistryAccess(WindowsRegistryAccess windowsRegistryAccess)
         {
             _registryKey = _registryKeyInitializer.InitializeRegistryKey(windowsRegistryAccess);
+            _windowsRegistryAccess = windowsRegistryAccess;
         }
 
         public int GetActualItemCount()

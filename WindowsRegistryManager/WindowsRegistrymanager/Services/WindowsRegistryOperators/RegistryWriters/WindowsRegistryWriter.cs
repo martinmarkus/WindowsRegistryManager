@@ -12,15 +12,14 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryWrite
 {
     internal class WindowsRegistryWriter : IWindowsRegistryWriter
     {
-        public WindowsRegistryAccess WindowsRegistryAccess { get; set; }
+        private WindowsRegistryAccess _windowsRegistryAccess;
+        private IRegistryKeyInitializer _registryKeyInitializer;
 
         private RegistryKey _registryKey;
         private IByteArraySerializer _byteArraySerializer;
-        private IRegistryKeyInitializer _registryKeyInitializer;
 
         public WindowsRegistryWriter(WindowsRegistryAccess windowsRegistryAccess, IRegistryKeyInitializer registryKeyInitializer)
         {
-            WindowsRegistryAccess = windowsRegistryAccess;
             _registryKeyInitializer = registryKeyInitializer;
             _byteArraySerializer = new ByteArraySerializer();
 
@@ -29,11 +28,11 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryWrite
 
         public void Write<T>(RegistryEntity<T> registryEntity)
         {
-            byte[] serializedValue = _byteArraySerializer.Serialize(registryEntity.Value);
+            byte[] serializedValue = _byteArraySerializer?.Serialize(registryEntity.Value);
 
             try
             {
-                _registryKey.SetValue(registryEntity.Name, serializedValue, registryEntity.RegistryValueKind);
+                _registryKey?.SetValue(registryEntity.Name, serializedValue, registryEntity.RegistryValueKind);
             }
             catch (Exception e) when (e is ArgumentException || e is ObjectDisposedException
                 || e is UnauthorizedAccessException || e is SecurityException || e is IOException)
@@ -44,15 +43,34 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryWrite
 
         public void WriteAll<T>(IList<RegistryEntity<T>> registryEntities)
         {
+            if (_registryKey == null)
+            {
+                return;
+            }
+
             foreach(RegistryEntity<T> registryEntity in registryEntities)
             {
                 Write(registryEntity);
             }
         }
 
+        public void Remove(string name)
+        {
+            try
+            {
+                _registryKey?.DeleteValue(name);
+            }
+            catch (Exception e) when (e is ArgumentException || e is ObjectDisposedException
+                || e is UnauthorizedAccessException || e is SecurityException || e is IOException)
+            {
+                Console.WriteLine(e.ToString());
+            }
+        }
+
         public void InitializeRegistryAccess(WindowsRegistryAccess windowsRegistryAccess)
         {
-            _registryKey = _registryKeyInitializer.InitializeRegistryKey(windowsRegistryAccess);
+            _registryKey = _registryKeyInitializer?.InitializeRegistryKey(windowsRegistryAccess);
+            _windowsRegistryAccess = windowsRegistryAccess;
         }
     }
 }

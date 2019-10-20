@@ -2,23 +2,62 @@
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace WindowsRegistryManager.Facades.Serializers
 {
     internal class ByteArraySerializer : IByteArraySerializer
     {
+        //public byte[] Serialize<U>(U objectToSerialize)
+        //{
+        //    if (objectToSerialize == null)
+        //    {
+        //        throw new ArgumentNullException();
+        //    }
+
+        //    XmlSerializer serializer = new XmlSerializer(typeof(U));
+
+        //    using (MemoryStream memoryStream = new MemoryStream())
+        //    {
+        //        using (XmlWriter xmlWriter = XmlWriter.Create(memoryStream))
+        //        {
+        //            serializer.Serialize(xmlWriter, objectToSerialize);
+        //            return memoryStream.ToArray();
+        //        }
+        //    }
+        //}
+
+        //public U Deserialize<U>(byte[] byteArray)
+        //{
+        //    if (byteArray == null || byteArray.Length == 0)
+        //    {
+        //        throw new InvalidOperationException();
+        //    }
+
+        //    XmlSerializer serializer = new XmlSerializer(typeof(U));
+
+        //    using (MemoryStream memoryStream = new MemoryStream(byteArray))
+        //    {
+        //        using (XmlReader xmlReader = XmlReader.Create(memoryStream))
+        //        {
+        //            return (U)serializer.Deserialize(xmlReader);
+        //        }
+        //    }
+        //}
+
         public byte[] Serialize<U>(U objectToSerialize)
         {
             MemoryStream memoryStream = new MemoryStream();
             IFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(memoryStream, objectToSerialize);
             byte[] result = null;
 
             try
             {
+                formatter.Serialize(memoryStream, objectToSerialize);
                 result = memoryStream.ToArray();
             }
-            catch (IOException e)
+            catch (Exception e) when (e is IOException || e is SerializationException)
             {
                 Console.WriteLine(e.Message);
             }

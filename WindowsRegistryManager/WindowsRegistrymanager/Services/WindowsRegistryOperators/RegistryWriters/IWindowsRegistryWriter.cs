@@ -8,5 +8,6 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryWrite
     {
         void Write<T>(RegistryEntity<T> registryEntity);
         void WriteAll<T>(IList<RegistryEntity<T>> registryEntities);
+        void Remove(string name);
     }
 }

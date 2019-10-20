@@ -1,6 +1,4 @@
-﻿using Microsoft.Win32;
-using System.Collections.Generic;
-using WindowsRegistryManager.DataObjects;
+﻿using System.Collections.Generic;
 using WindowsRegistryManager.Utilities;
 
 namespace WindowsRegistryManager.Services
@@ -46,10 +44,20 @@ namespace WindowsRegistryManager.Services
         void Set<T>(string name, T updatedValue);
 
         /// <summary>
-        /// Sets the currently used Root key and the Registry path.
+        /// Sets the currently used RootKey and the Registry path.
         /// </summary>
-        void SetRegistryPath(RootKey rootKey, string pathWithoutRoot);
+        void SetRegistryAccess(RootKey rootKey, string pathWithoutRoot);
 
-        RegistryValueKind RegistryValueKind { get; set; };
+        /// <summary>
+        /// Removes the value identified by the passed name.
+        /// </summary>
+        /// <param name="name"></param>
+        void Remove(string name);
+
+        /// <summary>
+        /// Returns the count of the values inside the actually focused subkey.
+        /// </summary>
+        /// <returns></returns>
+        int GetItemCount();
     }
 }

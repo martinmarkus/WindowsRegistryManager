@@ -9,6 +9,6 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
         RegistryEntity<T> Read<T>(string name);
         IList<RegistryEntity<T>> ReadAll<T>();
 
-        int GetActualItemCount()
+        int GetActualItemCount();
     }
 }

@@ -16,7 +16,7 @@ namespace WindowsRegistryManager.Services.RegistryKeyInitializers.ConcreteInitia
 
             try
             {
-                registryKey = Registry.CurrentUser.CreateSubKey(windowsRegistryAccess.PathWithoutRoot);
+                registryKey = Registry.CurrentUser.CreateSubKey(windowsRegistryAccess?.PathWithoutRoot, true);
             }
             catch (Exception e) when (e is ArgumentNullException || e is SecurityException
                 || e is ObjectDisposedException || e is UnauthorizedAccessException || e is IOException)

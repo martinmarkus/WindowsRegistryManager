@@ -41,20 +41,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\RegistryAccessAttribute.cs" />
     <Compile Include="DataObjects\RegistryEntity.cs" />
     <Compile Include="DataObjects\WindowsRegistryAccess\WindowsRegistryAccess.cs" />
     <Compile Include="DataObjects\WindowsRegistryAccess\IWindowsRegistryAccessHolder.cs" />
+    <Compile Include="Facades\Serializers\ByteArraySerializer.cs" />
+    <Compile Include="Facades\Serializers\IByteArraySerializer.cs" />
+    <Compile Include="Facades\Serializers\ISerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\WindowsRegistryReaders\WindowsRegistryReader.cs" />
-    <Compile Include="Services\WindowsRegistryWriters\WindowsRegistryWriter.cs" />
+    <Compile Include="Services\RegistryKeyInitializers\BaseRegistryKeyInitializer.cs" />
+    <Compile Include="Services\RegistryKeyInitializers\ConcreteInitializers\ClassesRootInitializer.cs" />
+    <Compile Include="Services\RegistryKeyInitializers\ConcreteInitializers\CurrentConfigInitializer.cs" />
+    <Compile Include="Services\RegistryKeyInitializers\ConcreteInitializers\CurrentUserInitializer.cs" />
+    <Compile Include="Services\RegistryKeyInitializers\ConcreteInitializers\DynDataInitializer.cs" />
+    <Compile Include="Services\RegistryKeyInitializers\ConcreteInitializers\LocalMachineInitializer.cs" />
+    <Compile Include="Services\RegistryKeyInitializers\ConcreteInitializers\PerformanceDataInitializer.cs" />
+    <Compile Include="Services\RegistryKeyInitializers\ConcreteInitializers\UsersInitializer.cs" />
+    <Compile Include="Services\RegistryKeyInitializers\IBaseRegistryKeyInitializer.cs" />
+    <Compile Include="Services\WindowsRegistryOperators\RegistryReaders\WindowsRegistryReader.cs" />
+    <Compile Include="Services\WindowsRegistryOperators\RegistryWriters\WindowsRegistryWriter.cs" />
     <Compile Include="Utilities\RootKey.cs" />
-    <Compile Include="Services\IWindowsRegistryManagerService.cs" />
-    <Compile Include="Services\WindowsRegistryManagerService.cs" />
-    <Compile Include="Services\WindowsRegistryReaders\IWindowsRegistryReader.cs" />
-    <Compile Include="Services\WindowsRegistryWriters\IWindowsRegistryWriter.cs" />
+    <Compile Include="Services\IWindowsRegistryService.cs" />
+    <Compile Include="Services\WindowsRegistryService.cs" />
+    <Compile Include="Services\WindowsRegistryOperators\RegistryReaders\IWindowsRegistryReader.cs" />
+    <Compile Include="Services\WindowsRegistryOperators\RegistryWriters\IWindowsRegistryWriter.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Facades\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

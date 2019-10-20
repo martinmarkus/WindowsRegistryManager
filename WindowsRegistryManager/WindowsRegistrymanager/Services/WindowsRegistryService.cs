@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
 using WindowsRegistryManager.DataObjects.WindowsRegistryAccess;
-using WindowsRegistryManager.Services.WindowsRegistryReaders;
-using WindowsRegistryManager.Services.WindowsRegistryWriters;
+using WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReaders;
+using WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryWriters;
 using WindowsRegistryManager.Utilities;
 
 namespace WindowsRegistryManager.Services
 {
-    public class WindowsRegistryManagerService : IWindowsRegistryManagerService
+    public class WindowsRegistryService : IWindowsRegistryService
     {
         private IWindowsRegistryWriter _windowsRegistryWriter;
         private IWindowsRegistryReader _windowsRegistryReader;
 
-        public WindowsRegistryManagerService(RootKey rootKey, string pathWithoutRoot)
+        public WindowsRegistryService(RootKey rootKey, string pathWithoutRoot)
         {
             WindowsRegistryAccess windowsRegistryAccess = GetAsWindowsRegistryAccess(rootKey, pathWithoutRoot);
 
@@ -24,7 +24,7 @@ namespace WindowsRegistryManager.Services
             throw new System.NotImplementedException();
         }
 
-        public IList<T> GetAll<T>()
+        public ICollection<T> GetAll<T>()
         {
             throw new System.NotImplementedException();
         }
@@ -34,7 +34,7 @@ namespace WindowsRegistryManager.Services
             throw new System.NotImplementedException();
         }
 
-        public void AddAll<T>(IList<T> newValues)
+        public void AddAll<T>(ICollection<T> newValues)
         {
             throw new System.NotImplementedException();
         }

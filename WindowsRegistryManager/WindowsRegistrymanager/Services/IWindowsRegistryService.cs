@@ -4,7 +4,7 @@ using WindowsRegistryManager.Utilities;
 
 namespace WindowsRegistryManager.Services
 {
-    public interface IWindowsRegistryManagerService
+    public interface IWindowsRegistryService
     {
         /// <summary>
         /// Returns an object from the Registry as T which is stored under the passed name.
@@ -19,7 +19,7 @@ namespace WindowsRegistryManager.Services
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        IList<T> GetAll<T>();
+        ICollection<T> GetAll<T>();
 
         /// <summary>
         /// Adds the newValue to the Registry under the passed name.
@@ -34,7 +34,7 @@ namespace WindowsRegistryManager.Services
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="newValues">The collection of values, which will be added to the Registry.</param>
-        void AddAll<T>(IList<T> newValues);
+        void AddAll<T>(ICollection<T> newValues);
 
         /// <summary>
         /// Overwrites a value in the Registry.

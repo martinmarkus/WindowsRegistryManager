@@ -2,11 +2,11 @@
 using WindowsRegistryManager.DataObjects;
 using WindowsRegistryManager.DataObjects.WindowsRegistryAccess;
 
-namespace WindowsRegistryManager.Services.WindowsRegistryReaders
+namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReaders
 {
     internal interface IWindowsRegistryReader : IWindowsRegistryAccessHolder
     {
         RegistryEntity<T> Get<T>(string name);
-        IList<RegistryEntity<T>> GetAll<T>();
+        ICollection<RegistryEntity<T>> GetAll<T>();
     }
 }

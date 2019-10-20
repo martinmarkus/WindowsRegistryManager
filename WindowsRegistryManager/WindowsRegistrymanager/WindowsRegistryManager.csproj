@@ -42,14 +42,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataObjects\RegistryEntity.cs" />
-    <Compile Include="IBaseWindowsRegistryManager.cs" />
+    <Compile Include="DataObjects\WindowsRegistryAccess\WindowsRegistryAccess.cs" />
+    <Compile Include="DataObjects\WindowsRegistryAccess\IWindowsRegistryAccessHolder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\WindowsRegistryReaders\WindowsRegistryReader.cs" />
+    <Compile Include="Services\WindowsRegistryWriters\WindowsRegistryWriter.cs" />
     <Compile Include="Utilities\RootKey.cs" />
     <Compile Include="Services\IWindowsRegistryManagerService.cs" />
     <Compile Include="Services\WindowsRegistryManagerService.cs" />
     <Compile Include="Services\WindowsRegistryReaders\IWindowsRegistryReader.cs" />
     <Compile Include="Services\WindowsRegistryWriters\IWindowsRegistryWriter.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Facades\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,5 +1,6 @@
 ﻿using System;
-using WindowsRegistryManager;
+using WindowsRegistryManager.Services;
+using WindowsRegistryManager.Utilities;
 
 namespace WindowsRegistryManagerExecuter
 {
@@ -7,7 +8,7 @@ namespace WindowsRegistryManagerExecuter
     {
         static void Main(string[] args)
         {
-            
+            IWindowsRegistryManagerService a = new WindowsRegistryManagerService(RootKey.HKEY_CURRENT_USER, @"Exampe\SubFolder");
 
             Console.ReadKey();
         }

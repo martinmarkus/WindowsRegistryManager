@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using WindowsRegistryManager.Attributes;
 using WindowsRegistryManager.Services.RegistryKeyInitializers;
 using WindowsRegistryManager.Utilities;
@@ -8,14 +9,33 @@ namespace WindowsRegistryManager.Facades.Factories.RegistryKeyInitializerFactori
 {
     internal class RegistryKeyInitializerFactory : IRegistryKeyInitializerFactory
     {
-        public Type GetInitializerType(RootKey rootKey)
+        public IRegistryKeyInitializer CreateInitializer(RootKey rootKey)
         {
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            Type initializerType = null;
+            IRegistryKeyInitializer initializer = null;
+            Type type = GetInitializerType(rootKey);
 
-            foreach (Type type in assembly.GetTypes())
+            try
             {
-                RegistryAccessAttribute[] attributes = (RegistryAccessAttribute[])type.GetCustomAttributes(typeof(RegistryAccessAttribute));
+                initializer = (IRegistryKeyInitializer)Activator.CreateInstance(type);
+            }
+            catch(Exception e) when (e is ArgumentException || e is ArgumentNullException || e is NotSupportedException
+                || e is TargetInvocationException || e is MethodAccessException || e is MemberAccessException
+                || e is InvalidComObjectException || e is COMException || e is MissingMethodException || e is TypeLoadException)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return initializer;
+        }
+
+        private Type GetInitializerType(RootKey rootKey)
+        {
+            Type initializerType = null;
+            Type[] assemblyTypes = GetAssemblyTypes();
+
+            foreach (Type type in assemblyTypes)
+            {
+                RegistryAccessAttribute[] attributes = GetRegistryAccessAttributes(type);
                 if (attributes == null || attributes.Length <= 0) continue;
 
                 RegistryAccessAttribute attribute;
@@ -31,14 +51,37 @@ namespace WindowsRegistryManager.Facades.Factories.RegistryKeyInitializerFactori
             return initializerType;
         }
 
-        public IRegistryKeyInitializer CreateInitializer(RootKey rootKey)
+        private Type[] GetAssemblyTypes()
         {
-            IRegistryKeyInitializer initializer = null;
-            Type type = GetInitializerType(rootKey);
+            Type[] types = null;
+            Assembly assembly = Assembly.GetExecutingAssembly();
 
-            initializer = (IRegistryKeyInitializer)Activator.CreateInstance(type);
+            try
+            {
+                types = assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
 
-            return initializer;
+            return types;
+        }
+
+        private RegistryAccessAttribute[] GetRegistryAccessAttributes(Type type)
+        {
+            RegistryAccessAttribute[] attributes = null;
+
+            try
+            {
+                attributes = (RegistryAccessAttribute[])type?.GetCustomAttributes(typeof(RegistryAccessAttribute));
+            }
+            catch(Exception e) when (e is ArgumentNullException || e is ArgumentException || e is NotSupportedException || e is TypeLoadException)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return attributes;
         }
     }
 }

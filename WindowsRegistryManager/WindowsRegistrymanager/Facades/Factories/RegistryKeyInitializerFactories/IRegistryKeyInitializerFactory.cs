@@ -6,7 +6,6 @@ namespace WindowsRegistryManager.Facades.Factories.RegistryKeyInitializerFactori
 {
     internal interface IRegistryKeyInitializerFactory
     {
-        Type GetInitializerType(RootKey rootKey);
         IRegistryKeyInitializer CreateInitializer(RootKey rootKey);
     }
 }

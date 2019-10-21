@@ -9,7 +9,26 @@ namespace WindowsRegistryManager.Facades.Factories.RegistryKeyInitializerFactori
 {
     internal class RegistryKeyInitializerFactory : IRegistryKeyInitializerFactory
     {
-        public Type GetInitializerType(RootKey rootKey)
+        public IRegistryKeyInitializer CreateInitializer(RootKey rootKey)
+        {
+            IRegistryKeyInitializer initializer = null;
+            Type type = GetInitializerType(rootKey);
+
+            try
+            {
+                initializer = (IRegistryKeyInitializer)Activator.CreateInstance(type);
+            }
+            catch(Exception e) when (e is ArgumentException || e is ArgumentNullException || e is NotSupportedException
+                || e is TargetInvocationException || e is MethodAccessException || e is MemberAccessException
+                || e is InvalidComObjectException || e is COMException || e is MissingMethodException || e is TypeLoadException)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return initializer;
+        }
+
+        private Type GetInitializerType(RootKey rootKey)
         {
             Type initializerType = null;
             Type[] assemblyTypes = GetAssemblyTypes();
@@ -30,25 +49,6 @@ namespace WindowsRegistryManager.Facades.Factories.RegistryKeyInitializerFactori
             }
 
             return initializerType;
-        }
-
-        public IRegistryKeyInitializer CreateInitializer(RootKey rootKey)
-        {
-            IRegistryKeyInitializer initializer = null;
-            Type type = GetInitializerType(rootKey);
-
-            try
-            {
-                initializer = (IRegistryKeyInitializer)Activator.CreateInstance(type);
-            }
-            catch(Exception e) when (e is ArgumentException || e is ArgumentNullException || e is NotSupportedException
-                || e is TargetInvocationException || e is MethodAccessException || e is MemberAccessException
-                || e is InvalidComObjectException || e is COMException || e is MissingMethodException || e is TypeLoadException)
-            {
-                Console.WriteLine(e.ToString());
-            }
-
-            return initializer;
         }
 
         private Type[] GetAssemblyTypes()

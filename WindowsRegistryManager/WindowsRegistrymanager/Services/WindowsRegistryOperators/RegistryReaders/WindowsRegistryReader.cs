@@ -1,7 +1,9 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.Serialization;
+using System.Security;
 using WindowsRegistryManager.DataObjects;
 using WindowsRegistryManager.DataObjects.WindowsRegistryAccess;
 using WindowsRegistryManager.Facades.Serializers;
@@ -29,7 +31,7 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
         {
             T result = default(T);
             byte[] byteArray = (byte[])_registryKey.GetValue(name);
-            RegistryValueKind registryValueKind = _registryKey.GetValueKind(name);
+            RegistryValueKind registryValueKind = default(RegistryValueKind);
 
             if (byteArray == null)
             {
@@ -38,26 +40,31 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
 
             try
             {
+                registryValueKind = _registryKey.GetValueKind(name);
                 result = _byteArraySerializer.Deserialize<T>(byteArray);
             }
-            catch (Exception e) when (e is SerializationException || e is InvalidCastException)
+            catch (Exception e) when (e is SerializationException || e is InvalidCastException
+                || e is SecurityException || e is ObjectDisposedException 
+                || e is IOException || e is UnauthorizedAccessException)
             {
                 Console.WriteLine(e.ToString());
             }
 
-            return new RegistryEntity<T>(name, result, registryValueKind); ;
+            return new RegistryEntity<T>(name, result, registryValueKind);
         }
 
         public IList<RegistryEntity<T>> ReadAll<T>()
         {
-            string[] names = _registryKey.GetValueNames();
-
             IList<RegistryEntity<T>> registryEntities = new List<RegistryEntity<T>>();
+            string[] names = GetValuesNames();
 
-            foreach (string name in names)
+            if (names != null)
             {
-                RegistryEntity<T> registryEntity = Read<T>(name);
-                registryEntities.Add(registryEntity);
+                foreach (string name in names)
+                {
+                    RegistryEntity<T> registryEntity = Read<T>(name);
+                    registryEntities.Add(registryEntity);
+                }
             }
 
             return registryEntities;
@@ -71,7 +78,25 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
 
         public int GetActualItemCount()
         {
-            return _registryKey.GetValueNames().Length;
+            string[] names = GetValuesNames();
+
+            return names == null ? 0 : names.Length; 
+        }
+
+        private string[] GetValuesNames()
+        {
+            string[] names = null;
+            try
+            {
+                names = _registryKey.GetValueNames();
+            }
+            catch (Exception e) when (e is SecurityException || e is ObjectDisposedException
+                || e is IOException || e is UnauthorizedAccessException)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return names;
         }
     }
 }

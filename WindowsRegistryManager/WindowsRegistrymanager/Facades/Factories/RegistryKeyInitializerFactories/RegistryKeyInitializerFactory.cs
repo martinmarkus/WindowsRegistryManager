@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using WindowsRegistryManager.Attributes;
 using WindowsRegistryManager.Services.RegistryKeyInitializers;
 using WindowsRegistryManager.Utilities;
@@ -10,12 +11,12 @@ namespace WindowsRegistryManager.Facades.Factories.RegistryKeyInitializerFactori
     {
         public Type GetInitializerType(RootKey rootKey)
         {
-            Assembly assembly = Assembly.GetExecutingAssembly();
             Type initializerType = null;
+            Type[] assemblyTypes = GetAssemblyTypes();
 
-            foreach (Type type in assembly.GetTypes())
+            foreach (Type type in assemblyTypes)
             {
-                RegistryAccessAttribute[] attributes = (RegistryAccessAttribute[])type.GetCustomAttributes(typeof(RegistryAccessAttribute));
+                RegistryAccessAttribute[] attributes = GetRegistryAccessAttributes(type);
                 if (attributes == null || attributes.Length <= 0) continue;
 
                 RegistryAccessAttribute attribute;
@@ -36,9 +37,51 @@ namespace WindowsRegistryManager.Facades.Factories.RegistryKeyInitializerFactori
             IRegistryKeyInitializer initializer = null;
             Type type = GetInitializerType(rootKey);
 
-            initializer = (IRegistryKeyInitializer)Activator.CreateInstance(type);
+            try
+            {
+                initializer = (IRegistryKeyInitializer)Activator.CreateInstance(type);
+            }
+            catch(Exception e) when (e is ArgumentException || e is ArgumentNullException || e is NotSupportedException
+                || e is TargetInvocationException || e is MethodAccessException || e is MemberAccessException
+                || e is InvalidComObjectException || e is COMException || e is MissingMethodException || e is TypeLoadException)
+            {
+                Console.WriteLine(e.ToString());
+            }
 
             return initializer;
+        }
+
+        private Type[] GetAssemblyTypes()
+        {
+            Type[] types = null;
+            Assembly assembly = Assembly.GetExecutingAssembly();
+
+            try
+            {
+                types = assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return types;
+        }
+
+        private RegistryAccessAttribute[] GetRegistryAccessAttributes(Type type)
+        {
+            RegistryAccessAttribute[] attributes = null;
+
+            try
+            {
+                attributes = (RegistryAccessAttribute[])type?.GetCustomAttributes(typeof(RegistryAccessAttribute));
+            }
+            catch(Exception e) when (e is ArgumentNullException || e is ArgumentException || e is NotSupportedException || e is TypeLoadException)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return attributes;
         }
     }
 }

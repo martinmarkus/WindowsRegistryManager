@@ -1,10 +1,10 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using WindowsRegistryManager.DataObjects;
 using WindowsRegistryManager.DataObjects.WindowsRegistryAccess;
 using WindowsRegistryManager.Facades.Factories.RegistryKeyInitializerFactories;
-using WindowsRegistryManager.Services.RegistryKeyInitializers;
 using WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReaders;
 using WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryWriters;
 using WindowsRegistryManager.Utilities;
@@ -21,17 +21,25 @@ namespace WindowsRegistryManager.Services
         public WindowsRegistryService(RootKey rootKey, string pathWithoutRoot)
         {
             _registryKeyInitializerFactory = new RegistryKeyInitializerFactory();
-            IRegistryKeyInitializer registryKeyInitializer = _registryKeyInitializerFactory.CreateInitializer(rootKey);
-
             WindowsRegistryAccess windowsRegistryAccess = GetAsWindowsRegistryAccess(rootKey, pathWithoutRoot);
 
-            _windowsRegistryWriter = new WindowsRegistryWriter(windowsRegistryAccess, registryKeyInitializer);
-            _windowsRegistryReader = new WindowsRegistryReader(windowsRegistryAccess, registryKeyInitializer);
+            RegistryKey registryKey = _registryKeyInitializerFactory.InitializeRegistryKey(windowsRegistryAccess);
+
+            _windowsRegistryWriter = new WindowsRegistryWriter(windowsRegistryAccess, registryKey);
+            _windowsRegistryReader = new WindowsRegistryReader(windowsRegistryAccess, registryKey);
         }
 
         public T Get<T>(string name)
         {
-            RegistryEntity<T> registryEntity = _windowsRegistryReader.Read<T>(name);
+            RegistryEntity<T> registryEntity = null;
+            try
+            {
+                registryEntity = _windowsRegistryReader.Read<T>(name);
+            }
+            catch (SerializationException e)
+            {
+                throw e;
+            }
             return registryEntity.Value;
         }
 
@@ -40,7 +48,16 @@ namespace WindowsRegistryManager.Services
             IList<RegistryEntity<T>> registryEntities = _windowsRegistryReader.ReadAll<T>();
             IList<T> result = new List<T>();
 
-            foreach(RegistryEntity<T> registryEntity in registryEntities)
+            try
+            {
+                registryEntities = _windowsRegistryReader.ReadAll<T>();
+            }
+            catch (SerializationException e)
+            {
+                throw e;
+            }
+
+            foreach (RegistryEntity<T> registryEntity in registryEntities)
             {
                 result.Add(registryEntity.Value);
             }
@@ -51,7 +68,15 @@ namespace WindowsRegistryManager.Services
         public void Add<T>(string name, T newValue)
         {
             RegistryEntity<T> registryEntity = new RegistryEntity<T>(name, newValue, _registryValueKind);
-            _windowsRegistryWriter.Write(registryEntity);
+
+            try
+            {
+                _windowsRegistryWriter.Write(registryEntity);
+            }
+            catch (SerializationException e)
+            {
+                throw e;
+            }
         }
 
         public void AddAll<T>(IList<T> newValues)
@@ -59,22 +84,37 @@ namespace WindowsRegistryManager.Services
             IList<RegistryEntity<T>> registryEntities = new List<RegistryEntity<T>>();
             int actualItemCount = _windowsRegistryReader.GetActualItemCount();
 
-            for (int i = 0; i < newValues.Count; i++)
+            try
             {
-                T newValue = newValues[i];
+                for (int i = 0; i < newValues.Count; i++)
+                {
+                    T newValue = newValues[i];
 
-                string nextId = Convert.ToString(actualItemCount + i);
-                RegistryEntity<T> registryEntity = new RegistryEntity<T>(nextId, newValue, _registryValueKind);
-                registryEntities.Add(registryEntity);
+                    string nextId = Convert.ToString(actualItemCount + i);
+                    RegistryEntity<T> registryEntity = new RegistryEntity<T>(nextId, newValue, _registryValueKind);
+                    registryEntities.Add(registryEntity);
+                }
+
+                _windowsRegistryWriter.WriteAll(registryEntities);
             }
-
-            _windowsRegistryWriter.WriteAll(registryEntities);
+            catch (SerializationException e)
+            {
+                throw e;
+            }
         }
 
         public void Set<T>(string name, T updatedValue)
         {
             RegistryEntity<T> registryEntity = new RegistryEntity<T>(name, updatedValue, _registryValueKind);
-            _windowsRegistryWriter.Write(registryEntity);
+
+            try
+            {
+                _windowsRegistryWriter.Write(registryEntity);
+            }
+            catch (SerializationException e)
+            {
+                throw e;
+            }
         }
 
         public void Remove(string name)

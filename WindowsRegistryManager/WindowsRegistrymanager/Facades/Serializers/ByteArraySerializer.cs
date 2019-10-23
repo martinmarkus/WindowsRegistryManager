@@ -57,9 +57,13 @@ namespace WindowsRegistryManager.Facades.Serializers
                 formatter.Serialize(memoryStream, objectToSerialize);
                 result = memoryStream.ToArray();
             }
-            catch (Exception e) when (e is IOException || e is SerializationException)
+            catch (IOException e)
             {
                 Console.WriteLine(e.Message);
+            }
+            catch(SerializationException e)
+            {
+                throw e;
             }
 
             return result;

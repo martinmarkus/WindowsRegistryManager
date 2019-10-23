@@ -1,11 +1,10 @@
-﻿using System;
-using WindowsRegistryManager.Services.RegistryKeyInitializers;
-using WindowsRegistryManager.Utilities;
+﻿using Microsoft.Win32;
+using WindowsRegistryManager.DataObjects.WindowsRegistryAccess;
 
 namespace WindowsRegistryManager.Facades.Factories.RegistryKeyInitializerFactories
 {
     internal interface IRegistryKeyInitializerFactory
     {
-        IRegistryKeyInitializer CreateInitializer(RootKey rootKey);
+        RegistryKey InitializeRegistryKey(WindowsRegistryAccess windowsRegistryAccess);
     }
 }

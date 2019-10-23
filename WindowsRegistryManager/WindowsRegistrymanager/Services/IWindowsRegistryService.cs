@@ -11,6 +11,7 @@ namespace WindowsRegistryManager.Services
         /// <typeparam name="T"></typeparam>
         /// <param name="name">The Name for the searched value.</param>
         /// <returns name="T"></returns>
+        /// <exception cref="System.Runtime.Serialization.SerializationException"></exception> 
         T Get<T>(string name);
 
         /// <summary>
@@ -18,6 +19,7 @@ namespace WindowsRegistryManager.Services
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
+        /// <exception cref="System.Runtime.Serialization.SerializationException"></exception> 
         IList<T> GetAll<T>();
 
         /// <summary>
@@ -26,6 +28,7 @@ namespace WindowsRegistryManager.Services
         /// <typeparam name="T"></typeparam>
         /// <param name="name">The newly added value will be found under this name in the Registry.</param>
         /// <param name="newValue">The value, which will be added to the Registry.</param>
+        /// <exception cref="System.Runtime.Serialization.SerializationException"></exception>
         void Add<T>(string name, T newValue);
 
         /// <summary>
@@ -33,6 +36,7 @@ namespace WindowsRegistryManager.Services
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="newValues">The collection of values, which will be added to the Registry.</param>
+        /// <exception cref="System.Runtime.Serialization.SerializationException"></exception>
         void AddAll<T>(IList<T> newValues);
 
         /// <summary>
@@ -41,6 +45,7 @@ namespace WindowsRegistryManager.Services
         /// <typeparam name="T"></typeparam>
         /// <param name="name">The value, which is stored under this name will be overwritten.</param>
         /// <param name="updatedValue">The new content of the overwritten value.</param>
+        /// <exception cref="System.Runtime.Serialization.SerializationException"></exception>
         void Set<T>(string name, T updatedValue);
 
         /// <summary>

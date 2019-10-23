@@ -2,25 +2,23 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Security;
 using WindowsRegistryManager.DataObjects;
 using WindowsRegistryManager.DataObjects.WindowsRegistryAccess;
 using WindowsRegistryManager.Facades.Serializers;
-using WindowsRegistryManager.Services.RegistryKeyInitializers;
 
 namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryWriters
 {
     internal class WindowsRegistryWriter : IWindowsRegistryWriter
     {
         private WindowsRegistryAccess _windowsRegistryAccess;
-        private IRegistryKeyInitializer _registryKeyInitializer;
-
         private RegistryKey _registryKey;
         private IByteArraySerializer _byteArraySerializer;
 
-        public WindowsRegistryWriter(WindowsRegistryAccess windowsRegistryAccess, IRegistryKeyInitializer registryKeyInitializer)
+        public WindowsRegistryWriter(WindowsRegistryAccess windowsRegistryAccess, RegistryKey registryKey)
         {
-            _registryKeyInitializer = registryKeyInitializer;
+            _registryKey = registryKey;
             _byteArraySerializer = new ByteArraySerializer();
 
             InitializeRegistryAccess(windowsRegistryAccess);
@@ -28,16 +26,19 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryWrite
 
         public void Write<T>(RegistryEntity<T> registryEntity)
         {
-            byte[] serializedValue = _byteArraySerializer?.Serialize(registryEntity.Value);
-
             try
             {
+                byte[] serializedValue = _byteArraySerializer?.Serialize(registryEntity.Value);
                 _registryKey?.SetValue(registryEntity.Name, serializedValue, registryEntity.RegistryValueKind);
             }
             catch (Exception e) when (e is ArgumentException || e is ObjectDisposedException
                 || e is UnauthorizedAccessException || e is SecurityException || e is IOException)
             {
                 Console.WriteLine(e.ToString());
+            }
+            catch (SerializationException e)
+            {
+                throw e;
             }
         }
 
@@ -69,7 +70,6 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryWrite
 
         public void InitializeRegistryAccess(WindowsRegistryAccess windowsRegistryAccess)
         {
-            _registryKey = _registryKeyInitializer?.InitializeRegistryKey(windowsRegistryAccess);
             _windowsRegistryAccess = windowsRegistryAccess;
         }
     }

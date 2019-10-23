@@ -1,5 +1,5 @@
 # WindowsRegistryManager
-A generic Registry Reader and Writer library in .NET.
+A generic Registry Reader and Writer library in .NET. The project depends on my StrategySupporter library.
 
 Example
 The following examples show how to use the basic methods of the library.

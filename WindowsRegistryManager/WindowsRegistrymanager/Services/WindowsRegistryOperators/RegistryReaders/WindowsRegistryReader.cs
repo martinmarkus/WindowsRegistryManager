@@ -7,21 +7,19 @@ using System.Security;
 using WindowsRegistryManager.DataObjects;
 using WindowsRegistryManager.DataObjects.WindowsRegistryAccess;
 using WindowsRegistryManager.Facades.Serializers;
-using WindowsRegistryManager.Services.RegistryKeyInitializers;
 
 namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReaders
 {
     internal class WindowsRegistryReader : IWindowsRegistryReader
     {
         private WindowsRegistryAccess _windowsRegistryAccess;
-        private IRegistryKeyInitializer _registryKeyInitializer;
 
         private RegistryKey _registryKey;
         private IByteArraySerializer _byteArraySerializer;
 
-        public WindowsRegistryReader(WindowsRegistryAccess windowsRegistryAccess, IRegistryKeyInitializer registryKeyInitializer)
+        public WindowsRegistryReader(WindowsRegistryAccess windowsRegistryAccess, RegistryKey registryKey)
         {
-            _registryKeyInitializer = registryKeyInitializer;
+            _registryKey = registryKey;
             _byteArraySerializer = new ByteArraySerializer();
 
             InitializeRegistryAccess(windowsRegistryAccess);
@@ -43,11 +41,15 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
                 registryValueKind = _registryKey.GetValueKind(name);
                 result = _byteArraySerializer.Deserialize<T>(byteArray);
             }
-            catch (Exception e) when (e is SerializationException || e is InvalidCastException
+            catch (Exception e) when (e is InvalidCastException
                 || e is SecurityException || e is ObjectDisposedException 
                 || e is IOException || e is UnauthorizedAccessException)
             {
                 Console.WriteLine(e.ToString());
+            }
+            catch (SerializationException e)
+            {
+                throw e;
             }
 
             return new RegistryEntity<T>(name, result, registryValueKind);
@@ -72,7 +74,6 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
 
         public void InitializeRegistryAccess(WindowsRegistryAccess windowsRegistryAccess)
         {
-            _registryKey = _registryKeyInitializer.InitializeRegistryKey(windowsRegistryAccess);
             _windowsRegistryAccess = windowsRegistryAccess;
         }
 

@@ -1,10 +1,11 @@
-﻿using System;
+﻿using StrategySupporter.Attributes;
+using System;
 using WindowsRegistryManager.Utilities;
 
 namespace WindowsRegistryManager.Attributes
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    internal class RegistryAccessAttribute : Attribute
+    internal class RegistryAccessAttribute : StrategyIdentifier
     {
         public RootKey RootKey { get; set; }
 

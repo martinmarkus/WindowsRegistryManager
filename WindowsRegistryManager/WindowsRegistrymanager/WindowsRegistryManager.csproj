@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="StrategySupporter">
+      <HintPath>.\StrategySupporter.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -52,6 +55,7 @@
     <Compile Include="Facades\Serializers\ByteArraySerializer.cs" />
     <Compile Include="Facades\Serializers\IByteArraySerializer.cs" />
     <Compile Include="Facades\Serializers\ISerializer.cs" />
+    <Compile Include="Pori.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\RegistryKeyInitializers\RegistryKeyInitializer.cs" />
     <Compile Include="Services\RegistryKeyInitializers\ConcreteInitializers\ClassesRootInitializer.cs" />

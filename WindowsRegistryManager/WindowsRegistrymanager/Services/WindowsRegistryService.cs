@@ -1,4 +1,6 @@
 ﻿using Microsoft.Win32;
+using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using WindowsRegistryManager.DataObjects.WindowsRegistryAccess;
 using WindowsRegistryManager.Facades.Factories.RegistryKeyInitializerFactories;
@@ -70,6 +72,11 @@ namespace WindowsRegistryManager.Services
             }
         }
 
+        public void AddAll<T>(IList<T> values) where T : class
+        {
+            _windowsRegistryOperator.WriteAll(values);
+        }
+
         public void Set<T>(T updatedValue) where T : class
         {
             try
@@ -116,5 +123,6 @@ namespace WindowsRegistryManager.Services
 
             return _windowsRegistryOperator.WindowsRegistryAccess.RootKey;
         }
+
     }
 }

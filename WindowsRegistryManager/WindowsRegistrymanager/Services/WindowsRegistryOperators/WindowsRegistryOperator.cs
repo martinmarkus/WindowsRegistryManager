@@ -17,6 +17,7 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
         public WindowsRegistryAccess WindowsRegistryAccess { get; private set; }
         private RegistryKey _registryKey;
         private IRegistryKeyInitializerFactory _registryKeyInitializerFactory;
+        private int _rangeIndex = 0;
 
         public WindowsRegistryOperator(WindowsRegistryAccess windowsRegistryAccess)
         {
@@ -34,9 +35,25 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
         {
             Dictionary<string, object> dictionary = new Dictionary<string, object>();
 
-            dictionary = value.GetType()
-                .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                .ToDictionary(prop => prop.Name, prop => prop.GetValue(value, null));
+            // ha hibat dob, nincs prop, nem ezt hasznaljuk
+            try
+            {
+                if (IsPrimitive(value.GetType()))
+                {
+                    dictionary.Add(typeof(T).Name + _rangeIndex, value);
+                    _rangeIndex++;
+                }
+                else
+                {
+                    dictionary = value.GetType()
+                        .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                        .ToDictionary(prop => prop.Name, prop => prop.GetValue(value, null));
+                }
+            }
+            catch(Exception e) when (e is TargetParameterCountException)
+            {
+                Console.WriteLine(e.ToString());
+            }
 
             foreach (KeyValuePair<string, object> entry in dictionary)
             {
@@ -44,9 +61,32 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
             }
         }
 
-        private void WriteSingleElement(string path, object value)
+        private void WriteSingleElement(string name, object value)
         {
-            _registryKey.SetValue(path, value, RegistryValueKind.String);
+            _registryKey.SetValue(name, value, RegistryValueKind.String);
+        }
+
+        // primitiv tipusokat tarolo listara
+        public void WriteAll<T>(IList<T> values) where T : class
+        {
+            _rangeIndex = 0;
+            string subFolder = WindowsRegistryAccess.PathWithoutRoot + @"\" + typeof(T).Name + "List";
+            WindowsRegistryAccess windowsRegistryAccess = null;
+
+            for (int i = 0; i < values.Count; i++)
+            {
+                if (IsPrimitive(values[i].GetType()))
+                {
+                    windowsRegistryAccess = new WindowsRegistryAccess(WindowsRegistryAccess.RootKey, subFolder);
+                    InitializeRegistryAccess(windowsRegistryAccess);
+                }
+                else
+                {
+                    windowsRegistryAccess = new WindowsRegistryAccess(WindowsRegistryAccess.RootKey, subFolder + @"\" + typeof(T).Name + i);
+                    InitializeRegistryAccess(windowsRegistryAccess);
+                }
+                Write(values[i]);
+            }
         }
 
         public T Read<T>() where T : class
@@ -210,6 +250,13 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
             }
 
             return names;
+        }
+
+        private bool IsPrimitive(Type type)
+        {
+            if (type == null) { return false; }
+
+            return type.IsPrimitive || type == typeof(decimal) || type == typeof(string);
         }
     }
 }

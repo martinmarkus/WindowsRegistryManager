@@ -1,4 +1,6 @@
-﻿using WindowsRegistryManager.Utilities;
+﻿using System;
+using System.Collections.Generic;
+using WindowsRegistryManager.Utilities;
 
 namespace WindowsRegistryManager.Services
 {
@@ -19,6 +21,13 @@ namespace WindowsRegistryManager.Services
         /// <param name="newValue">The value, which will be added to the Registry.</param>
         /// <exception cref="System.Runtime.Serialization.SerializationException"></exception>
         void Add<T>(T newValue) where T : class;
+
+        /// <summary>
+        ///  Adds the values to the Registry under the actual path.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="values"></param>
+        void AddAll<T>(IList<T> values) where T : class;
 
         /// <summary>
         /// Overwrites a value in the Registry.

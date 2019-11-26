@@ -1,4 +1,6 @@
-﻿using WindowsRegistryManager.DataObjects.WindowsRegistryAccess;
+﻿using System;
+using System.Collections.Generic;
+using WindowsRegistryManager.DataObjects.WindowsRegistryAccess;
 
 namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReaders
 {
@@ -6,6 +8,7 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
     {
         T Read<T>() where T : class;
         void Write<T>(T value) where T : class;
+        void WriteAll<T>(IList<T> values) where T : class;
         void Delete();
 
         int GetActualItemCount();

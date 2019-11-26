@@ -32,12 +32,24 @@ namespace WindowsRegistryManager.Services
             }
         }
 
-        public T Get<T>(string path) where T : class
+        public void SetRegistryAccess(string pathWithoutRoot)
+        {
+            if (_windowsRegistryOperator == null)
+            {
+                SetRegistryAccess(RootKey.CurrentUser, pathWithoutRoot);
+            }
+            else
+            {
+                SetRegistryAccess(_windowsRegistryOperator.WindowsRegistryAccess.RootKey, pathWithoutRoot);
+            }
+        }
+
+        public T Get<T>() where T : class
         {
             T result = default(T);
             try
             {
-                result = _windowsRegistryOperator.Read<T>(path);
+                result = _windowsRegistryOperator?.Read<T>();
             }
             catch (SerializationException e)
             {
@@ -46,11 +58,11 @@ namespace WindowsRegistryManager.Services
             return result;
         }
 
-        public void Add<T>(string path, T newValue) where T : class
+        public void Add<T>(T newValue) where T : class
         {
             try
             {
-                _windowsRegistryOperator.Write(newValue);
+                _windowsRegistryOperator?.Write(newValue);
             }
             catch (SerializationException e)
             {
@@ -58,11 +70,11 @@ namespace WindowsRegistryManager.Services
             }
         }
 
-        public void Set<T>(string path, T updatedValue) where T : class
+        public void Set<T>(T updatedValue) where T : class
         {
             try
             {
-                _windowsRegistryOperator.Write(updatedValue);
+                _windowsRegistryOperator?.Write(updatedValue);
             }
             catch (SerializationException e)
             {
@@ -70,19 +82,39 @@ namespace WindowsRegistryManager.Services
             }
         }
 
-        public void Remove(string path)
+        public void Remove()
         {
-            _windowsRegistryOperator.Delete(path);
+            _windowsRegistryOperator?.Delete();
         }
 
         public int GetItemCount()
         {
+            if (_windowsRegistryOperator == null)
+            {
+                return 0;
+            }
+
             return _windowsRegistryOperator.GetActualItemCount();
         }
 
         private WindowsRegistryAccess GetAsWindowsRegistryAccess(RootKey rootKey, string pathWithoutRoot)
         {
             return new WindowsRegistryAccess(rootKey, pathWithoutRoot);
+        }
+
+        public string GetActualRegistryPath()
+        {
+            return _windowsRegistryOperator?.WindowsRegistryAccess?.PathWithoutRoot;
+        }
+
+        public RootKey GetActualRootKey()
+        {
+            if (_windowsRegistryOperator == null)
+            {
+                return RootKey.CurrentUser;
+            }
+
+            return _windowsRegistryOperator.WindowsRegistryAccess.RootKey;
         }
     }
 }

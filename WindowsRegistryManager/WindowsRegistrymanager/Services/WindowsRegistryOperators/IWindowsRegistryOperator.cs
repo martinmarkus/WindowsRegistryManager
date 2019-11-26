@@ -4,10 +4,12 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
 {
     internal interface IWindowsRegistryOperator : IWindowsRegistryAccessHolder
     {
-        T Read<T>(string registryPath) where T : class;
+        T Read<T>() where T : class;
         void Write<T>(T value) where T : class;
-        void Delete(string path);
+        void Delete();
 
         int GetActualItemCount();
+
+        WindowsRegistryAccess WindowsRegistryAccess { get; }
     }
 }

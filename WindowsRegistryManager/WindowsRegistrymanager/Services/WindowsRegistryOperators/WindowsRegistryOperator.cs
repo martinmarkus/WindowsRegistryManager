@@ -14,7 +14,7 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
 {
     internal class WindowsRegistryOperator : IWindowsRegistryOperator
     {
-        private WindowsRegistryAccess _windowsRegistryAccess;
+        public WindowsRegistryAccess WindowsRegistryAccess { get; private set; }
         private RegistryKey _registryKey;
         private IRegistryKeyInitializerFactory _registryKeyInitializerFactory;
 
@@ -26,7 +26,7 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
 
         public void InitializeRegistryAccess(WindowsRegistryAccess windowsRegistryAccess)
         {
-            _windowsRegistryAccess = windowsRegistryAccess;
+            WindowsRegistryAccess = windowsRegistryAccess;
             _registryKey = _registryKeyInitializerFactory.InitializeRegistryKey(windowsRegistryAccess);
         }
 
@@ -49,7 +49,7 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
             _registryKey.SetValue(path, value, RegistryValueKind.String);
         }
 
-        public T Read<T>(string registryPath) where T : class
+        public T Read<T>() where T : class
         {
             Dictionary<string, object> dictionary = ReadToDictionary();
 
@@ -94,7 +94,7 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
 
             }
 
-            bool isSubKexExist = IsSubKeyExist(registryPath);
+            bool isSubKexExist = IsSubKeyExist(WindowsRegistryAccess.PathWithoutRoot);
 
             if (!isSubKexExist)
             {
@@ -177,11 +177,11 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
             return list.Count > 0;
         }
 
-        public void Delete(string path)
+        public void Delete()
         {
             try
             {
-                _registryKey.DeleteSubKeyTree(path);
+                _registryKey.DeleteSubKeyTree(WindowsRegistryAccess.PathWithoutRoot);
             }
             catch (Exception e) when (e is ArgumentException || e is ObjectDisposedException
                 || e is UnauthorizedAccessException || e is SecurityException || e is IOException)

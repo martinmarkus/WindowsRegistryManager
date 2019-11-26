@@ -70,23 +70,26 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
         public void WriteAll<T>(IList<T> values) where T : class
         {
             _rangeIndex = 0;
-            string subFolder = WindowsRegistryAccess.PathWithoutRoot + @"\" + typeof(T).Name + "List";
-            WindowsRegistryAccess windowsRegistryAccess = null;
+            bool isPrimitive = IsPrimitive(typeof(T));
+            string subFolder = typeof(T).Name + "List";
+
+            if (isPrimitive)
+            {
+                ChangeToSubFolder(subFolder);
+                _rangeIndex++;
+            }
 
             for (int i = 0; i < values.Count; i++)
             {
-                if (IsPrimitive(values[i].GetType()))
+                if (!isPrimitive)
                 {
-                    windowsRegistryAccess = new WindowsRegistryAccess(WindowsRegistryAccess.RootKey, subFolder);
-                    InitializeRegistryAccess(windowsRegistryAccess);
-                }
-                else
-                {
-                    windowsRegistryAccess = new WindowsRegistryAccess(WindowsRegistryAccess.RootKey, subFolder + @"\" + typeof(T).Name + i);
-                    InitializeRegistryAccess(windowsRegistryAccess);
+                    string subFolder2 = subFolder + @"\" + typeof(T).Name + i;
+                    ChangeToSubFolder(subFolder2);
                 }
                 Write(values[i]);
             }
+
+            InitializeRegistryAccess(WindowsRegistryAccess);
         }
 
         public T Read<T>() where T : class
@@ -257,6 +260,12 @@ namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReade
             if (type == null) { return false; }
 
             return type.IsPrimitive || type == typeof(decimal) || type == typeof(string);
+        }
+
+        private void ChangeToSubFolder(string subFolder)
+        {
+            _registryKey.CreateSubKey(subFolder, true);
+            _registryKey = _registryKey.OpenSubKey(subFolder, true);
         }
     }
 }

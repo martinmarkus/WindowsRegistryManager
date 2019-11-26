@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WindowsRegistryManager.Services;
-using WindowsRegistryManager.Utilities;
 
 namespace WindowsRegistryTest
 {
@@ -14,13 +13,13 @@ namespace WindowsRegistryTest
         {
             IWindowsRegistryService windowsRegistryService = new WindowsRegistryService();
 
-            IList<string> list = new List<string>();
-            list.Add("askjhgdsad");
-            list.Add("asdjhgjkhgsad");
-            list.Add("asoiuzö9dsad");
-            list.Add("asdö98u98sad");
+            IList<Bar> list = new List<Bar>();
+            list.Add(new Bar("fgdsgfds"));
+            list.Add(new Bar("gfdsuztrfiu"));
+            list.Add(new Bar("oiuzniuz"));
+            list.Add(new Bar("8765guzt"));
 
-            windowsRegistryService.SetRegistryAccess(@"Test\Registry\Location\One\Two\Three");
+            windowsRegistryService.SetRegistryAccess(@"Test");
             windowsRegistryService.AddAll(list);
         }
     }

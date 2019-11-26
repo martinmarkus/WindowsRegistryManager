@@ -9,5 +9,6 @@ namespace WindowsRegistryTest
         public bool Value3 { get; set; }
         public string Value4 { get; set; }
         public IList<string> List { get; set; }
+        public Bar Bar { get; set; }
     }
 }

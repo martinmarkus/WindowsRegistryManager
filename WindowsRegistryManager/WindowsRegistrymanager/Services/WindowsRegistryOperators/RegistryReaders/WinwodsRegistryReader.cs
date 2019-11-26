@@ -10,14 +10,14 @@ using WindowsRegistryManager.Facades.Serializers;
 
 namespace WindowsRegistryManager.Services.WindowsRegistryOperators.RegistryReaders
 {
-    internal class WindowsRegistryReader : IWindowsRegistryReader
+    internal class WinwodsRegistryReader
     {
         private WindowsRegistryAccess _windowsRegistryAccess;
 
         private RegistryKey _registryKey;
         private IByteArraySerializer _byteArraySerializer;
 
-        public WindowsRegistryReader(WindowsRegistryAccess windowsRegistryAccess, RegistryKey registryKey)
+        public WinwodsRegistryReader(WindowsRegistryAccess windowsRegistryAccess, RegistryKey registryKey)
         {
             _registryKey = registryKey;
             _byteArraySerializer = new ByteArraySerializer();
